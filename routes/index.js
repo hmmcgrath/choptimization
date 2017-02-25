@@ -56,12 +56,30 @@ router.get('/updatePatient/:id', function(req, res, next) {
 	res.render('updatePatient', {id: req.params.id, patient: formattedPatient});
 });
 
-function calculateScore(census, minsToChange) {
-	var score = 176.86 - 0.133*minsToChange;
+function calculateScore(census) {
+	var score = 176.86 - 0.133*minsToChange();
 	if (census === 'High') {
 		score += 9.88;
 	}
-	return score;
+	return Math.round(score);
+}
+
+function minsToChange() {
+	var now = moment();
+	var year = now.year();
+	var month = now.month();
+	var day = now.date();
+
+	if (now.hour() < 7) {
+		var diff =  moment([year,month,day,7]).diff(now)/1000/60;
+	} 
+	else if (now.hour() < 19) {
+		var diff = moment([year,month,day,19]).diff(now)/1000/60;
+	}
+	else {
+		var diff = moment([year,month,day+1,7]).diff(now)/1000/60;
+	}
+	return diff;
 }
 
 function createPatient(formData) {
@@ -72,7 +90,7 @@ function createPatient(formData) {
 	var patient = formData;
 	patient.dob = parseInt(moment(patient.dob).valueOf());
 	patient.timeOfAdmit = parseInt(moment().valueOf());
-	patient.transferTime = calculateScore(patient.census, 0);
+	patient.transferTime = calculateScore(patient.census);
 	patient.id = hash;
 	return patient;
 }
@@ -85,17 +103,33 @@ function formatPatient(patient, update) {
   	formattedPatient.census = patient.census;
   	formattedPatient.transferTime = patient.transferTime + ' mins';
   	formattedPatient.id = patient.id;
+  	formattedPatient.status = patient.status;
 
   	if (!update) {
   		formattedPatient.dob = moment(patient.dob).format('MM/DD/YYYY');
-  		formattedPatient.timeOfAdmit = moment(patient.timeOfAdmit).format('MM/DD/YYYY');
+  		var timeOfAdmit = moment(patient.timeOfAdmit);
+  		if (timeOfAdmit.hour() < 12) {
+  			formattedPatient.timeOfAdmit = timeOfAdmit.format('HH:mm') + ' am';
+  		}
+  		else {
+  			var hour = timeOfAdmit.hour() - 12;
+  			var minute = timeOfAdmit.minute();
+			formattedPatient.timeOfAdmit = hour+':'+minute+' pm';
+  		}
   	}
   	else {
 		formattedPatient.dob = moment(patient.dob).format('YYYY-MM-DD');
-  		formattedPatient.timeOfAdmit = moment(patient.timeOfAdmit).format('YYYY-MM-DD');	
   	}
 
   	return formattedPatient;
 }
+
+// Update the waiting times every 5 seconds
+setInterval(function() {
+  	patients.forEach(function(patient) {
+		console.log(patient);
+		patient.transferTime = calculateScore(patient.census);
+	});
+}, 5000);
 
 module.exports = router;
