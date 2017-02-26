@@ -29,13 +29,13 @@
 				    <legend>Census</legend>
 				    <div class="form-check">
 				     	<label class="form-check-label">
-				        	<input type="radio" class="form-check-input" name="census" id="optionsHigh" value="High" checked>
+				        	<input type="radio" class="form-check-input" name="census" id="optionsHigh" value="High" <%= patient.census === "High" ? "checked" : "" %> >
 				        	High
 				      	</label>
 				    </div>
 				    <div class="form-check">
 				    	<label class="form-check-label">
-					     	<input type="radio" class="form-check-input" name="census" id="optionsLow" value="Low">
+					     	<input type="radio" class="form-check-input" name="census" id="optionsLow" value="Low" <%= patient.census === "Low" ? "checked" : "" %> >
 					        Low
 				      	</label>
 				    </div>
@@ -43,12 +43,13 @@
 				  <div class="form-group">
 					  <legend for="inlineFormCustomSelect">Status</legend>
 					  <select name="status" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
-					    <option selected>MRFT</option>
-					    <option value="Bed Assigned">Bed Assigned</option>
-					    <option value="Bed Approved">Bed Approved</option>
-					    <option value="MD/RN Started">MD/RN Started</option>
-					    <option value="MD/RN Complete">MD/RN Complete</option>
-					    <option value="Admit">Admit</option>
+					  	<%
+						var options = [ "MRFT", "Bed Assigned", "Bed Approved", "MD/RN Started", "MD/RN Complete", "Admit" ];
+						options.forEach(function(status) {
+							var selected = (patient.status === status) ? "selected" : "";
+							%><option value="<%= status %>" <%= selected %>><%= status %></option><%
+						});
+						%>
 					  </select>
 				  </div>
 				  <div class="row">
