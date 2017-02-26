@@ -1,5 +1,5 @@
 var express = require('express');
-var moment = require('moment');
+var moment = require('moment-timezone');
 var router = express.Router();
 var crypto = require('crypto');
 
@@ -37,7 +37,7 @@ router.post('/submitPatient/:id', function(req, res, next) {
 	var idx = patients.findIndex(function(patient) {
 		return patient.id === req.params.id;
 	});
-	patients[idx] = createPatient(req.body);
+	updatePatient(patients[idx], req.body);
 	res.redirect('/list');
 });
 
@@ -65,34 +65,48 @@ function calculateScore(census) {
 }
 
 function minsToChange() {
-	var now = moment();
+	var now = moment().tz('America/New York');
 	var year = now.year();
 	var month = now.month();
 	var day = now.date();
 
 	if (now.hour() < 7) {
-		var diff =  moment([year,month,day,7]).diff(now)/1000/60;
+		var diff =  moment([year,month,day,7]).tz('America/New York').diff(now)/1000/60;
 	} 
 	else if (now.hour() < 19) {
-		var diff = moment([year,month,day,19]).diff(now)/1000/60;
+		var diff = moment([year,month,day,19]).tz('America/New York').diff(now)/1000/60;
 	}
 	else {
-		var diff = moment([year,month,day+1,7]).diff(now)/1000/60;
+		var diff = moment([year,month,day+1,7]).tz('America/New York').diff(now)/1000/60;
 	}
 	return diff;
 }
 
 function createPatient(formData) {
-	var current_date = moment().valueOf().toString();
+	var current_date = moment().tz('America/New York').valueOf().toString();
 	var random = Math.random().toString();
 	var hash = crypto.createHash('sha1').update(current_date + random).digest('hex');
 
-	var patient = formData;
-	patient.dob = parseInt(moment(patient.dob).valueOf());
-	patient.timeOfAdmit = parseInt(moment().valueOf());
+	patient = {};
+	patient.name = formData.name;
+	patient.dob = moment(formData.dob).valueOf();
+	patient.unit = formData.unit;
+	patient.census = formData.census;
 	patient.transferTime = calculateScore(patient.census);
+	patient.status = formData.status;
 	patient.id = hash;
+	patient.timeOfAdmit = moment().tz('America/New York').valueOf();
+
 	return patient;
+}
+
+function updatePatient(patient, formData) {
+	patient.name = formData.name;
+	patient.dob = moment(formData.dob).valueOf();
+	patient.unit = formData.unit;
+	patient.census = formData.census;
+	patient.transferTime = calculateScore(patient.census);
+	patient.status = formData.status;
 }
 
 function formatPatient(patient, update) {
@@ -106,15 +120,13 @@ function formatPatient(patient, update) {
   	formattedPatient.status = patient.status;
 
   	if (!update) {
-  		formattedPatient.dob = moment(patient.dob).format('MM/DD/YYYY');
+  		formattedPatient.dob = moment(patient.dob).format('MM-DD-YYYY');
   		var timeOfAdmit = moment(patient.timeOfAdmit);
   		if (timeOfAdmit.hour() < 12) {
   			formattedPatient.timeOfAdmit = timeOfAdmit.format('HH:mm') + ' am';
   		}
   		else {
-  			var hour = timeOfAdmit.hour() - 12;
-  			var minute = timeOfAdmit.minute();
-			formattedPatient.timeOfAdmit = hour+':'+minute+' pm';
+  			formattedPatient.timeOfAdmit = timeOfAdmit.format('hh:mm') + ' pm';
   		}
   	}
   	else {
@@ -127,7 +139,6 @@ function formatPatient(patient, update) {
 // Update the waiting times every 5 seconds
 setInterval(function() {
   	patients.forEach(function(patient) {
-		console.log(patient);
 		patient.transferTime = calculateScore(patient.census);
 	});
 }, 5000);
