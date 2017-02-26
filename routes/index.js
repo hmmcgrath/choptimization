@@ -71,13 +71,13 @@ function minsToChange() {
 	var day = now.date();
 
 	if (now.hour() < 7) {
-		var diff =  moment([year,month,day,7]).tz('America/New_York').diff(now)/1000/60;
+		var diff =  moment.tz([year,month,day,7], 'America/New_York').diff(now)/1000/60;
 	} 
 	else if (now.hour() < 19) {
-		var diff = moment([year,month,day,19]).tz('America/New_York').diff(now)/1000/60;
+		var diff = moment.tz([year,month,day,19], 'America/New_York').diff(now)/1000/60;
 	}
 	else {
-		var diff = moment([year,month,day+1,7]).tz('America/New_York').diff(now)/1000/60;
+		var diff = moment.tz([year,month,day+1,7], 'America/New_York').diff(now)/1000/60;
 	}
 	return diff;
 }
