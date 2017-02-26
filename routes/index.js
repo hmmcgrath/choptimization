@@ -65,44 +65,45 @@ function calculateScore(census) {
 }
 
 function minsToChange() {
-	var now = moment().tz('America/New York');
+	var now = moment().tz('America/New_York');
 	var year = now.year();
 	var month = now.month();
 	var day = now.date();
 
 	if (now.hour() < 7) {
-		var diff =  moment([year,month,day,7]).tz('America/New York').diff(now)/1000/60;
+		var diff =  moment([year,month,day,7]).tz('America/New_York').diff(now)/1000/60;
 	} 
 	else if (now.hour() < 19) {
-		var diff = moment([year,month,day,19]).tz('America/New York').diff(now)/1000/60;
+		var diff = moment([year,month,day,19]).tz('America/New_York').diff(now)/1000/60;
 	}
 	else {
-		var diff = moment([year,month,day+1,7]).tz('America/New York').diff(now)/1000/60;
+		var diff = moment([year,month,day+1,7]).tz('America/New_York').diff(now)/1000/60;
 	}
 	return diff;
 }
 
 function createPatient(formData) {
-	var current_date = moment().tz('America/New York').valueOf().toString();
+	console.log(formData);
+	var current_date = moment().tz('America/New_York').valueOf().toString();
 	var random = Math.random().toString();
 	var hash = crypto.createHash('sha1').update(current_date + random).digest('hex');
 
 	patient = {};
 	patient.name = formData.name;
-	patient.dob = moment(formData.dob).tz('America/New York').valueOf();
+	patient.dob = moment(formData.dob).tz('America/New_York').valueOf();
 	patient.unit = formData.unit;
 	patient.census = formData.census;
 	patient.transferTime = calculateScore(patient.census);
 	patient.status = formData.status;
 	patient.id = hash;
-	patient.timeOfAdmit = moment().tz('America/New York').valueOf();
+	patient.timeOfAdmit = moment().tz('America/New_York').valueOf();
 
 	return patient;
 }
 
 function updatePatient(patient, formData) {
 	patient.name = formData.name;
-	patient.dob = moment(formData.dob).tz('America/New York').valueOf();
+	patient.dob = moment(formData.dob).tz('America/New_York').valueOf();
 	patient.unit = formData.unit;
 	patient.census = formData.census;
 	patient.transferTime = calculateScore(patient.census);
@@ -120,8 +121,8 @@ function formatPatient(patient, update) {
   	formattedPatient.status = patient.status;
 
   	if (!update) {
-  		formattedPatient.dob = moment(patient.dob).tz('America/New York').format('MM-DD-YYYY');
-  		var timeOfAdmit = moment(patient.timeOfAdmit).tz('America/New York');
+  		formattedPatient.dob = moment(patient.dob).tz('America/New_York').format('MM-DD-YYYY');
+  		var timeOfAdmit = moment(patient.timeOfAdmit).tz('America/New_York');
   		if (timeOfAdmit.hour() < 12) {
   			formattedPatient.timeOfAdmit = timeOfAdmit.format('HH:mm') + ' am';
   		}
@@ -130,7 +131,7 @@ function formatPatient(patient, update) {
   		}
   	}
   	else {
-		formattedPatient.dob = moment(patient.dob).tz('America/New York').format('YYYY-MM-DD');
+		formattedPatient.dob = moment(patient.dob).tz('America/New_York').format('YYYY-MM-DD');
   	}
 
   	return formattedPatient;
