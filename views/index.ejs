@@ -25,9 +25,9 @@
 					<thead class="thead-default">
 						<tr>
 							<th>Name</th>
-							<th class="hidden-xs-down">Date of Birth</th>
-							<th class="hidden-xs-down">Inpatient Unit</th>
-							<th class="hidden-xs-down">Census</th>
+							<th>Date of Birth</th>
+							<th>Inpatient Unit</th>
+							<th>Census</th>
 							<th>Time of Admittance</th>	
 							<th>Status</th>
 							<th>Estimated Time Until Transfer</th>	
@@ -38,9 +38,9 @@
 						<% patients.forEach(function(patient) { %>
 								 	<tr id=<%= patient.id %> >
 				        					<td><%= patient.name %> </td>
-				        					<td class="hiddne-xs-down"><%= patient.dob %></td>
-				        					<td class="hidden-xs-down"><%= patient.unit %></td>
-				        					<td class="hidden-xs-down"><%= patient.census %></td>
+				        					<td><%= patient.dob %></td>
+				        					<td><%= patient.unit %></td>
+				        					<td><%= patient.census %></td>
 				        					<td><%= patient.timeOfAdmit %></td>
 				        					<td><%= patient.status %></td>
 				        					<td><%= patient.transferTime %></td>
