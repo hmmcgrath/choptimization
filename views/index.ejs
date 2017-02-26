@@ -20,34 +20,36 @@
 					</a>
 				</div>
 			</form>
-			<table class="table table-hover">
-				<thead class="thead-default">
-					<tr>
-						<th>Name</th>
-						<th class="hidden-xs-down">Date of Birth</th>
-						<th class="hidden-xs-down">Inpatient Unit</th>
-						<th class="hidden-xs-down">Census</th>
-						<th>Time of Admittance</th>	
-						<th>Status</th>
-						<th>Estimated Time Until Transfer</th>	
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					<% patients.forEach(function(patient) { %>
-							 	<tr id=<%= patient.id %> >
-			        					<td><%= patient.name %> </td>
-			        					<td class="hiddne-xs-down"><%= patient.dob %></td>
-			        					<td class="hidden-xs-down"><%= patient.unit %></td>
-			        					<td class="hidden-xs-down"><%= patient.census %></td>
-			        					<td><%= patient.timeOfAdmit %></td>
-			        					<td><%= patient.status %></td>
-			        					<td><%= patient.transferTime %></td>
-			        					<td><button class="btn btn-danger btn-sm"><i class="fa ch-times-rectangle fa-times-rectangle"></i></button></td>
-		        				</tr>
-    				<% }); %>
-				</tbody>
-			</table>
+			<div class="table-responsive">
+				<table class="table table-hover hidden-s-down">
+					<thead class="thead-default">
+						<tr>
+							<th>Name</th>
+							<th class="hidden-xs-down">Date of Birth</th>
+							<th class="hidden-xs-down">Inpatient Unit</th>
+							<th class="hidden-xs-down">Census</th>
+							<th>Time of Admittance</th>	
+							<th>Status</th>
+							<th>Estimated Time Until Transfer</th>	
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<% patients.forEach(function(patient) { %>
+								 	<tr id=<%= patient.id %> >
+				        					<td><%= patient.name %> </td>
+				        					<td class="hiddne-xs-down"><%= patient.dob %></td>
+				        					<td class="hidden-xs-down"><%= patient.unit %></td>
+				        					<td class="hidden-xs-down"><%= patient.census %></td>
+				        					<td><%= patient.timeOfAdmit %></td>
+				        					<td><%= patient.status %></td>
+				        					<td><%= patient.transferTime %></td>
+				        					<td><button class="btn btn-danger btn-sm"><i class="fa ch-times-rectangle fa-times-rectangle"></i></button></td>
+			        				</tr>
+	    				<% }); %>
+					</tbody>
+				</table>
+			</div>
     	</div>
     </div>
 
