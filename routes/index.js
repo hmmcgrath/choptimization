@@ -89,7 +89,7 @@ function createPatient(formData) {
 
 	patient = {};
 	patient.name = formData.name;
-	patient.dob = moment(formData.dob).valueOf();
+	patient.dob = moment(formData.dob).tz('America/New York').valueOf();
 	patient.unit = formData.unit;
 	patient.census = formData.census;
 	patient.transferTime = calculateScore(patient.census);
@@ -102,7 +102,7 @@ function createPatient(formData) {
 
 function updatePatient(patient, formData) {
 	patient.name = formData.name;
-	patient.dob = moment(formData.dob).valueOf();
+	patient.dob = moment(formData.dob).tz('America/New York').valueOf();
 	patient.unit = formData.unit;
 	patient.census = formData.census;
 	patient.transferTime = calculateScore(patient.census);
@@ -120,8 +120,8 @@ function formatPatient(patient, update) {
   	formattedPatient.status = patient.status;
 
   	if (!update) {
-  		formattedPatient.dob = moment(patient.dob).format('MM-DD-YYYY');
-  		var timeOfAdmit = moment(patient.timeOfAdmit);
+  		formattedPatient.dob = moment(patient.dob).tz('America/New York').format('MM-DD-YYYY');
+  		var timeOfAdmit = moment(patient.timeOfAdmit).tz('America/New York');
   		if (timeOfAdmit.hour() < 12) {
   			formattedPatient.timeOfAdmit = timeOfAdmit.format('HH:mm') + ' am';
   		}
@@ -130,7 +130,7 @@ function formatPatient(patient, update) {
   		}
   	}
   	else {
-		formattedPatient.dob = moment(patient.dob).format('YYYY-MM-DD');
+		formattedPatient.dob = moment(patient.dob).tz('America/New York').format('YYYY-MM-DD');
   	}
 
   	return formattedPatient;
