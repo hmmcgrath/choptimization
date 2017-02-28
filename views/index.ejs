@@ -36,7 +36,7 @@
 					</thead>
 					<tbody>
 						<% patients.forEach(function(patient) { %>
-								 	<tr id=<%= patient.id %> >
+								 	<tr id=<%= patient.id %> class="<%= patient.status === 'Admit' ? 'table-success' : '' %>" >
 				        					<td><%= patient.name %> </td>
 				        					<td><%= patient.dobList %></td>
 				        					<td><%= patient.unit %></td>
