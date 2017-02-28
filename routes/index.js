@@ -60,6 +60,10 @@ router.delete('/patient/:id', function(req, res, next) {
 	res.json({success: true});
 });
 
+router.get('/*', function (req, res) {
+	res.redirect('/list');
+});
+
 function calculateScore(census, status) {
 	if (status === 'MRFT') {
 		return Math.round(61.6 - 0.075*minsToChange());
