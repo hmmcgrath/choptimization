@@ -4,7 +4,7 @@
 
 		$('tbody>tr').click(function(ev) {
 			if (!removingPatient) {
-				window.location.href= '/updatePatient/' + $(ev.delegateTarget).attr('id');
+				window.location.href= '/patient/' + $(ev.delegateTarget).attr('id');
 			}
 		});
 
@@ -17,9 +17,13 @@
 			trow = $(ev.delegateTarget).parents('tr');
 			id = trow.attr('id');
 
-			$.get('/removePatient/' + id, function(data) {
-				removingPatient = false;
-				trow.remove();
+			$.ajax({
+				url: '/patient/' + id,
+				type: 'DELETE',
+				success: function(data) {
+					removingPatient = false;
+					trow.remove();
+				}
 			});
 
 			ev.stopPropagation();

@@ -12,14 +12,14 @@
 	<body class="container ch-container">
 		<div class="row">
 			<div class="col">
-				<form action="/submitPatient/<%= id %>" method="post">
+				<form action="/patient/<%= id %>" method="post">
 				  <div class="form-group">
 				    <label for="inputFullName">Full Name</label>
 				    <input type="text" class="form-control" id="inputFullName" name="name" value="<%= patient.name %>">
 				  </div>
 				  <div class="form-group">
 				    <label for="inputDateOfBirth">Date of Birth</label>
-				    <input class="form-control" type="date" id="inputDateOfBirth" name="dob" value="<%= patient.dob %>">
+				    <input class="form-control" type="date" id="inputDateOfBirth" name="dob" value="<%= patient.dobForm %>">
 				  </div>
 				  <div class="form-group">
 				    <label for="inputInpatientUnit">Inpatient Unit</label>

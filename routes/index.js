@@ -13,55 +13,72 @@ router.get('/', function(req, res,next) {
 router.get('/list', function(req, res, next) {
   // Reformat the dates so that they are human readable without
   // changing the original object stored in memory
-  formattedPatients = [];
-  patients.forEach(function(patient) {
-  	formattedPatients.push(formatPatient(patient, false));
-  });
-  res.render('index', {patients: formattedPatients});
+  res.render('index', {patients: patients});
 });
 
-router.get('/update', function(req, res, next){
-	res.render('update', {});
-});
-
-router.get('/addPatient', function(req, res, next){
+router.get('/patient', function(req, res, next){
 	res.render('addPatient', {});
 });
 
-router.post('/submitPatient', function(req, res, next) {
-	patients.push(createPatient(req.body));
+router.post('/patient', function(req, res, next) {
+	var current_date = moment().tz('America/New_York').valueOf().toString();
+	var random = Math.random().toString();
+	var hash = crypto.createHash('sha1').update(current_date + random).digest('hex');
+
+	// Set all of patient's data
+	var patient = {}
+	var timeOfAdmit = moment().tz('America/New_York');
+	patient.timeOfAdmit = timeOfAdmit.format('hh:mm') + (timeOfAdmit.hour() < 12 ? ' am' : 'pm');
+	patient.id = hash;
+	updatePatientData(patient, req.body);
+
+	patients.push(patient);
 	res.redirect('/list');
 });
 
-router.post('/submitPatient/:id', function(req, res, next) {
+// Get the form view to update a patient's information
+router.get('/patient/:id', function(req, res, next) {
 	var idx = patients.findIndex(function(patient) {
 		return patient.id === req.params.id;
 	});
-	updatePatient(patients[idx], req.body);
+	res.render('updatePatient', {id: req.params.id, patient: patients[idx]});
+});
+
+// Submit the form data to update a patient's data
+router.post('/patient/:id', function(req, res, next) {
+	var idx = patients.findIndex(function(patient) {
+		return patient.id === req.params.id;
+	});
+	updatePatientData(patients[idx], req.body);
 	res.redirect('/list');
 });
 
-router.get('/removePatient/:id', function(req, res, next) {
+router.delete('/patient/:id', function(req, res, next) {
 	patients = patients.filter(function(patient) {
 		return patient.id !== req.params.id;
 	});
 	res.json({success: true});
 });
 
-router.get('/updatePatient/:id', function(req, res, next) {
-	var idx = patients.findIndex(function(patient) {
-		return patient.id === req.params.id;
-	});
-	var formattedPatient = formatPatient(patients[idx], true);
-	res.render('updatePatient', {id: req.params.id, patient: formattedPatient});
-});
-
-function calculateScore(census) {
-	var score = 176.86 - 0.133*minsToChange();
-	if (census === 'High') {
-		score += 9.88;
+function calculateScore(census, status) {
+	if (status === 'MRFT') {
+		return Math.round(61.6 - 0.075*minsToChange());
+	} 
+	else if (status === 'Bed Assigned') {
+		return Math.round(7.8);
 	}
-	return Math.round(score);
+	else if (status === 'Bed Approved') {
+		return Math.round(13.59 + 9.88*(census === 'High' ? 1 : 0));
+	}
+	else if (status === 'MD/RN Started') {
+		return Math.round(65.67 - .058*minsToChange());
+	}
+	else if (status === 'MD/RN Complete') {
+		return Math.round(28.2);
+	}
+	else {
+		return '';
+	}
 }
 
 function minsToChange() {
@@ -82,65 +99,25 @@ function minsToChange() {
 	return diff;
 }
 
-function createPatient(formData) {
-	console.log(formData);
-	var current_date = moment().tz('America/New_York').valueOf().toString();
-	var random = Math.random().toString();
-	var hash = crypto.createHash('sha1').update(current_date + random).digest('hex');
+function updatePatientData(patient, formData) {
+	var dob = moment.tz(formData.dob, 'America/New_York');
 
-	patient = {};
 	patient.name = formData.name;
-	patient.dob = moment(formData.dob).tz('America/New_York').valueOf();
 	patient.unit = formData.unit;
 	patient.census = formData.census;
-	patient.transferTime = calculateScore(patient.census);
 	patient.status = formData.status;
-	patient.id = hash;
-	patient.timeOfAdmit = moment().tz('America/New_York').valueOf();
+	patient.transferTime = calculateScore(patient.census, patient.status) + ' mins';
 
-	return patient;
-}
-
-function updatePatient(patient, formData) {
-	patient.name = formData.name;
-	patient.dob = moment.tz(formData.dob, 'America/New_York').valueOf();
-	patient.unit = formData.unit;
-	patient.census = formData.census;
-	patient.transferTime = calculateScore(patient.census);
-	patient.status = formData.status;
-}
-
-function formatPatient(patient, update) {
-	var formattedPatient = {};
-
-  	formattedPatient.name = patient.name;
-  	formattedPatient.unit = patient.unit;
-  	formattedPatient.census = patient.census;
-  	formattedPatient.transferTime = patient.transferTime + ' mins';
-  	formattedPatient.id = patient.id;
-  	formattedPatient.status = patient.status;
-
-  	if (!update) {
-  		formattedPatient.dob = moment.tz(patient.dob, 'America/New_York').format('MM-DD-YYYY');
-  		var timeOfAdmit = moment.tz(patient.timeOfAdmit, 'America/New_York');
-  		if (timeOfAdmit.hour() < 12) {
-  			formattedPatient.timeOfAdmit = timeOfAdmit.format('HH:mm') + ' am';
-  		}
-  		else {
-  			formattedPatient.timeOfAdmit = timeOfAdmit.format('hh:mm') + ' pm';
-  		}
-  	}
-  	else {
-		formattedPatient.dob = moment.tz(patient.dob, 'America/New_York').format('YYYY-MM-DD');
-  	}
-
-  	return formattedPatient;
+	// Set the patient's date of birth. Formatted differently for the
+	// form view and the list view
+	patient.dobList = dob.format('MM-DD-YYYY');
+	patient.dobForm = dob.format('YYYY-MM-DD');
 }
 
 // Update the waiting times every 5 seconds
 setInterval(function() {
   	patients.forEach(function(patient) {
-		patient.transferTime = calculateScore(patient.census);
+		patient.transferTime = calculateScore(patient.census, patient.status) + ' mins';
 	});
 }, 5000);
 

@@ -15,7 +15,7 @@
     	<div class="col">
     		<form>
 				<div class="form-group">
-					<a class=" btn btn-block  btn-lg btn-primary" href="/addPatient">
+					<a class=" btn btn-block  btn-lg btn-primary" href="/patient">
 						Add New Patient
 					</a>
 				</div>
@@ -38,7 +38,7 @@
 						<% patients.forEach(function(patient) { %>
 								 	<tr id=<%= patient.id %> >
 				        					<td><%= patient.name %> </td>
-				        					<td><%= patient.dob %></td>
+				        					<td><%= patient.dobList %></td>
 				        					<td><%= patient.unit %></td>
 				        					<td><%= patient.census %></td>
 				        					<td><%= patient.timeOfAdmit %></td>
