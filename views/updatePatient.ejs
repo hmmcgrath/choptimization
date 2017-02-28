@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+	<head>
+	    <!-- Required meta tags -->
+		<meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	    <!-- Bootstrap CSS -->
+	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+	    <link rel="stylesheet" href="/stylesheets/style.css">
+	</head>
+	<body class="container ch-container">
+		<div class="row">
+			<div class="col">
+				<form action="/patient/<%= id %>" method="post">
+				  <div class="form-group">
+				    <label for="inputFullName">Full Name</label>
+				    <input type="text" class="form-control" id="inputFullName" name="name" value="<%= patient.name %>">
+				  </div>
+				  <div class="form-group">
+				    <label for="inputDateOfBirth">Date of Birth</label>
+				    <input class="form-control" type="date" id="inputDateOfBirth" name="dob" value="<%= patient.dobForm %>">
+				  </div>
+				  <div class="form-group">
+				    <label for="inputInpatientUnit">Inpatient Unit</label>
+				    <input type="text" class="form-control" id="inputInpatientUnit" name="unit" value="<%= patient.unit %>">
+				  </div>
+				  <fieldset class="form-group">
+				    <legend>Census</legend>
+				    <div class="form-check">
+				     	<label class="form-check-label">
+				        	<input type="radio" class="form-check-input" name="census" id="optionsHigh" value="High" <%= patient.census === "High" ? "checked" : "" %> >
+				        	High
+				      	</label>
+				    </div>
+				    <div class="form-check">
+				    	<label class="form-check-label">
+					     	<input type="radio" class="form-check-input" name="census" id="optionsLow" value="Low" <%= patient.census === "Low" ? "checked" : "" %> >
+					        Low
+				      	</label>
+				    </div>
+				  </fieldset>
+				  <div class="form-group">
+					  <legend for="inlineFormCustomSelect">Status</legend>
+					  <select name="status" class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
+					  	<%
+						var options = [ "MRFT", "Bed Assigned", "Bed Approved", "MD/RN Started", "MD/RN Complete", "Admit" ];
+						options.forEach(function(status) {
+							var selected = (patient.status === status) ? "selected" : "";
+							%><option value="<%= status %>" <%= selected %>><%= status %></option><%
+						});
+						%>
+					  </select>
+				  </div>
+				  <div class="row">
+				  	<div class="col-8 offset-2">
+				  		<button type="submit" class="btn btn-block btn-primary align-center">Update Patient</button>
+				  	</div>
+				  </div>
+				</form>
+			</div>
+		</div>
+
+	    <!-- jQuery first, then Tether, then Bootstrap JS. -->
+	    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+	    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+	    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+	</body>
+</htmlt
