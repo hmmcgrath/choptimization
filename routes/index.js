@@ -4,6 +4,14 @@ var router = express.Router();
 var crypto = require('crypto');
 
 var patients = [];
+var statusMap = {
+	'MRFT': 1,
+	'Bed Assigned': 2,
+	'Bed Approved': 3,
+	'MD/RN Started': 4,
+	'MD/RN Complete': 5,
+	'Admit': 6
+}
 
 /* GET home page. */
 router.get('/', function(req, res,next) {
@@ -64,25 +72,26 @@ router.get('/*', function (req, res) {
 	res.redirect('/list');
 });
 
-function calculateScore(census, status) {
-	if (status === 'MRFT') {
-		return Math.round(61.6 - 0.075*minsToChange());
-	} 
-	else if (status === 'Bed Assigned') {
-		return Math.round(7.8);
+function calculateScore(census, statusVal) {
+	var timeRemaining = 176.86 - .133*minsToChange() + 9.88*(census === 'High' ? 1 : 0);
+
+	if (statusVal >= 2) {
+		timeRemaining -= (61.6 - 0.075*minsToChange());
 	}
-	else if (status === 'Bed Approved') {
-		return Math.round(13.59 + 9.88*(census === 'High' ? 1 : 0));
+	if (statusVal >= 3) {
+		timeRemaining -= 7.8;
 	}
-	else if (status === 'MD/RN Started') {
-		return Math.round(65.67 - .058*minsToChange());
+	if (statusVal >= 4) {
+		timeRemaining -= (13.59 + 9.88*(census === 'High' ? 1 : 0));
 	}
-	else if (status === 'MD/RN Complete') {
-		return Math.round(28.2);
+	if (statusVal >= 5) {
+		timeRemaining -= (65.67 - .058*minsToChange());
 	}
-	else {
-		return '';
+	if (statusVal >= 6) {
+		timeRemaining -= 28.2;
 	}
+
+	return Math.round(timeRemaining);
 }
 
 function minsToChange() {
@@ -110,7 +119,7 @@ function updatePatientData(patient, formData) {
 	patient.unit = formData.unit;
 	patient.census = formData.census;
 	patient.status = formData.status;
-	patient.transferTime = calculateScore(patient.census, patient.status) + ' mins';
+	patient.transferTime = calculateScore(patient.census, statusMap[patient.status]) + ' mins';
 
 	// Set the patient's date of birth. Formatted differently for the
 	// form view and the list view
@@ -121,7 +130,7 @@ function updatePatientData(patient, formData) {
 // Update the waiting times every 5 seconds
 setInterval(function() {
   	patients.forEach(function(patient) {
-		patient.transferTime = calculateScore(patient.census, patient.status) + ' mins';
+		patient.transferTime = calculateScore(patient.census, statusMap[patient.status]) + ' mins';
 	});
 }, 5000);
 
